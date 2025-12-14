@@ -22,7 +22,7 @@ object RetrofitClient {
         val originalUrl = original.url
         val hasAppId = originalUrl.queryParameter("appid") != null
         val apiKey = BuildConfig.OPEN_WEATHER_API_KEY.ifEmpty { 
-            "9060eca96c471f5d7ae9ab11f8286796" 
+            "28d49bc0f32d126ef40129c2f3cdf7e4" 
         }
         val url = if (hasAppId) {
             originalUrl

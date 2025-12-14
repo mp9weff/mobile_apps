@@ -6,7 +6,7 @@ plugins {
 
 val weatherApiKey: String = providers.gradleProperty("OPEN_WEATHER_API_KEY")
     .orElse(providers.environmentVariable("OPEN_WEATHER_API_KEY"))
-    .orElse("9060eca96c471f5d7ae9ab11f8286796")
+    .orElse("28d49bc0f32d126ef40129c2f3cdf7e4")
     .get()
 
 android {

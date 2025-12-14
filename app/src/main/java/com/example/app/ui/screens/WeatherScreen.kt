@@ -37,8 +37,19 @@ fun WeatherScreen() {
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Погода") }
+            TopAppBar(
+                title = {
+                    Text(
+                        "Погода",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
             )
         }
     ) { padding ->
@@ -57,16 +68,27 @@ fun WeatherScreen() {
                     onValueChange = { cityInput = it },
                     modifier = Modifier.weight(1f),
                     label = { Text("Введіть місто") },
-                    singleLine = true
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                    )
                 )
                 Button(
                     onClick = {
                         viewModel.loadWeather(cityInput)
                         cityInput = ""
                     },
-                    enabled = !uiState.isLoading && cityInput.isNotBlank()
+                    enabled = !uiState.isLoading && cityInput.isNotBlank(),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Пошук")
+                    Text(
+                        "Пошук",
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    )
                 }
             }
 
@@ -106,10 +128,11 @@ fun WeatherScreen() {
                     text = "Прогноз на ${uiState.forecast.size} днів",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(uiState.forecast) { forecastItem ->
                         ForecastCard(forecastItem)
@@ -124,18 +147,22 @@ fun WeatherScreen() {
 fun CurrentWeatherCard(weather: WeatherResponse) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(6.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(20.dp)
         ) {
             Text(
                 text = weather.name,
                 style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             
             val weatherInfo = weather.weather.firstOrNull()
             Row(
@@ -147,14 +174,16 @@ fun CurrentWeatherCard(weather: WeatherResponse) {
                     Text(
                         text = "${weather.main.temp.toInt()}°C",
                         style = MaterialTheme.typography.displayMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     weatherInfo?.let {
                         Text(
                             text = it.description.replaceFirstChar { 
                                 if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() 
                             },
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -162,21 +191,31 @@ fun CurrentWeatherCard(weather: WeatherResponse) {
                     AsyncImage(
                         model = "https://openweathermap.org/img/wn/${it.icon}@2x.png",
                         contentDescription = it.description,
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(100.dp)
                     )
                 }
             }
             
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             
-            Row(
+            Card(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
             ) {
-                WeatherDetail("Відчувається", "${weather.main.feelsLike.toInt()}°C")
-                WeatherDetail("Мін", "${weather.main.tempMin.toInt()}°C")
-                WeatherDetail("Макс", "${weather.main.tempMax.toInt()}°C")
-                WeatherDetail("Вологість", "${weather.main.humidity}%")
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    WeatherDetail("Відчувається", "${weather.main.feelsLike.toInt()}°C")
+                    WeatherDetail("Мін", "${weather.main.tempMin.toInt()}°C")
+                    WeatherDetail("Макс", "${weather.main.tempMax.toInt()}°C")
+                    WeatherDetail("Вологість", "${weather.main.humidity}%")
+                }
             }
         }
     }
@@ -186,8 +225,11 @@ fun CurrentWeatherCard(weather: WeatherResponse) {
 fun ForecastCard(forecastItem: ForecastItem) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(2.dp)
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(3.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Row(
             modifier = Modifier
@@ -200,14 +242,16 @@ fun ForecastCard(forecastItem: ForecastItem) {
                 Text(
                     text = formatDate(forecastItem.dtTxt),
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 forecastItem.weather.firstOrNull()?.let {
                     Text(
                         text = it.description.replaceFirstChar { 
                             if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() 
                         },
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -215,11 +259,13 @@ fun ForecastCard(forecastItem: ForecastItem) {
                 Text(
                     text = "${forecastItem.main.temp.toInt()}°C",
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = "${forecastItem.main.tempMin.toInt()}°/${forecastItem.main.tempMax.toInt()}°",
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
